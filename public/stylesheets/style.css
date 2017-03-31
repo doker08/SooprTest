@@ -1,0 +1,16 @@
+md-card{
+  width: 185px;
+  height: 150px;
+}
+
+.search{
+  padding: 3px; border:0; box-shadow: 3px; width: 500px; height: 30px; outline:none;
+}
+
+.white{
+  background: white;
+}
+
+.box-title{
+  margin: 12px;
+}
