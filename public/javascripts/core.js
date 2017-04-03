@@ -1,15 +1,15 @@
-var app = angular.module('myApp', ['ngMaterial']);
+var app = angular.module('shopApp', ['ngMaterial']);
 
-app.controller('myController', function ($scope, $http, $mdDialog) {
+app.controller('shopController', function ($scope, $http, $mdDialog) {
     $scope.sum = 0;
     $scope.products = [];
     $scope.basket = [];
 
     $scope.sortType = [
-        "От А до Я",
-        "От Я до А",
-        "От дешевых к дорогим",
-        "От дорогих в дешевым"
+        {"name": "От А до Я", "type": "title"},
+        {"name": "От Я до А", "type": "-title"},
+        {"name": "От дешевых к дорогим", "type": "price"},
+        {"name": "От дорогих в дешевым", "type": "-price"}
     ];
 
     $http.get('/api/items').then(function (response) {
@@ -18,25 +18,9 @@ app.controller('myController', function ($scope, $http, $mdDialog) {
 
     getStats();
 
-    $scope.getSelectedText = function() {
-        if ($scope.selectedItem !== undefined) {
-            switch($scope.selectedItem)
-            {
-                case $scope.sortType[0]:
-                    $scope.products.sort(sortByTitleASC);
-                    break;
-                case $scope.sortType[1]:
-                    $scope.products.sort(sortByTitleASC).reverse();
-                    break;
-                case $scope.sortType[2]:
-                    $scope.products.sort(sortByPriceASC);
-                    break;
-                case $scope.sortType[3]:
-                    $scope.products.sort(sortByPriceASC).reverse();
-                    break;
-            }
-
-            return $scope.selectedItem;
+    $scope.getSortText = function() {
+        if ($scope.selectedSort !== undefined) {
+            return $scope.selectedSort.name;
         } else {
             return "Выберите сортировку";
         }
@@ -97,25 +81,3 @@ app.controller('myController', function ($scope, $http, $mdDialog) {
         });
     }
 });
-
-function sortByTitleASC(a, b) {
-    if (a.title > b.title) {
-        return 1;
-    }
-    if (a.title < b.title) {
-        return -1;
-    }
-
-    return 0;
-}
-
-function sortByPriceASC(a, b) {
-    if (a.price > b.price) {
-        return 1;
-    }
-    if (a.price < b.price) {
-        return -1;
-    }
-
-    return 0;
-}

@@ -15,76 +15,80 @@
     <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
     <script src="javascripts/core.js"></script>
 </head>
-<body ng-app="myApp" ng-cloak>
-    <div ng-controller="myController">
-        <div layout="row" layout-align="space-around" layout-padding layout-margin>
-            <div  layout="column" flex="65" layout-fill>
+<body ng-app="shopApp" ng-cloak>
+    <div ng-controller="shopController">
+        <div layout="column">
+
+            <!--Search-->
+            <div id="header" class="blue" layout="row" layout-align="start center" layout-padding>
+                <input md-whiteframe="2" placeholder="Поиск" class="search" ng-model="search.title" flex-offset="5">
+            </div>
+
+            <!--Content-->
+            <div layout="row" layout-align="space-around" layout-padding layout-margin>
+
                 <!--Main-->
-                <div layout="column" layout-padding flex>
-
-                    <!--Search-->
-                    <div md-whiteframe="2" class="white" style="margin-bottom: 13px" layout-align="center center">
-                        <input md-whiteframe="1" placeholder="Поиск" class="search" ng-model="search.title">
+                <div  layout="column" flex="65" layout-fill>
+                    <div layout="column" layout-padding flex>
+                        <!--Products-->
+                        <div md-whiteframe="2" class="white" layout="row" layout-wrap>
+                            <md-card ng-repeat="item in products | filter:search:strict | orderBy: selectedSort.type" md-theme-watch >
+                                <md-card-title>
+                                    <span class="md-title">{{item.title}}</span><br>
+                                </md-card-title>
+                                <md-card-content>
+                                    <span class="md-subhead">Стоимость: {{item.price}}</span>
+                                </md-card-content>
+                                <md-card-actions layout="row" layout-align="end center">
+                                    <md-button class="md-raised md-primary" ng-click="addToBasket(item)">В корзину</md-button>
+                                </md-card-actions>
+                            </md-card>
+                        </div>
                     </div>
 
-                    <!--Products-->
-                    <div md-whiteframe="2" class="white" layout="row" layout-wrap>
-                        <md-card ng-repeat="item in products | filter:search:strict" md-theme-watch >
-                            <md-card-title>
-                                <span class="md-title">{{item.title}}</span><br>
-                            </md-card-title>
-                            <md-card-content>
-                                <span class="md-subhead">Стоимость: {{item.price}}</span>
-                            </md-card-content>
-                            <md-card-actions layout="row" layout-align="end center">
-                                <md-button class="md-raised md-primary" ng-click="addToBasket(item)">В корзину</md-button>
-                            </md-card-actions>
-                        </md-card>
-                    </div>
-                </div>
-
-                <!--Stats-->
-                <div layout="row" layout-align="center center" layout-padding >
-                    <div layout="row" class="white" md-whiteframe="2" layout-fill>
-                        <md-content class="white">
-                            <h3>Статистика</h3>
-                            <p>Выполнено заказов: {{stats.totalorders}}</p>
-                            <p>Продано товаров: {{stats.totalitems}}</p>
-                        </md-content>
+                    <!--Stats-->
+                    <div layout="row" layout-align="center center" layout-padding >
+                        <div layout="row" class="white" md-whiteframe="2" layout-fill>
+                            <md-content class="white">
+                                <h3>Статистика</h3>
+                                <p>Выполнено заказов: {{stats.totalorders}}</p>
+                                <p>Продано товаров: {{stats.totalitems}}</p>
+                            </md-content>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!--Sorting-->
-            <div layout="column" layout-fill layout-padding layout-align="space-around" flex="33" layout-margin>
-            <div class="white" style="margin-bottom: 25px" md-whiteframe="2" layout="column"  >
-                <h3 class="box-title">Сортировка</h3>
-                <md-input-container>
-                    <label>Сортировка</label>
-                    <md-select ng-model="selectedItem" md-selected-text="getSelectedText()">
-                        <md-optgroup label="Тип сортировки">
-                            <md-option ng-value="item" ng-repeat="item in sortType">{{item}}</md-option>
-                        </md-optgroup>
-                    </md-select>
-                </md-input-container>
-            </div>
+                <!--Sorting-->
+                <div layout="column" layout-fill layout-padding layout-align="space-around" flex="33" layout-margin>
+                <div class="white" style="margin-bottom: 25px" md-whiteframe="2" layout="column"  >
+                    <h3 class="box-title">Сортировка</h3>
+                    <md-input-container>
+                        <label>Сортировка</label>
+                        <md-select ng-model="selectedSort" md-selected-text="getSortText()">
+                            <md-optgroup label="Тип сортировки">
+                                <md-option ng-value="item" ng-repeat="item in sortType">{{item.name}}</md-option>
+                            </md-optgroup>
+                        </md-select>
+                    </md-input-container>
+                </div>
 
-            <!--Basket-->
-            <div md-whiteframe="2" class="white" layout="column">
-                <h3 class="box-title">Корзина</h3>
-                <md-divider inset></md-divider>
-                <md-list>
-                    <md-list-item ng-repeat="item in basket" ng-click="null">
-                        <span>{{item.title}} x{{item.count}}</span>
-                        <!--<span>{{item.count * item.price}}</span>-->
-                        <md-button class="md-secondary" ng-click="plusCount(item)">+</md-button>
-                        <md-button class="md-secondary" ng-click="minusCount(item)">-</md-button>
-                    </md-list-item>
-                </md-list>
-                <md-menu-divider></md-menu-divider>
-                <p style="margin-left: 12px"><b>Сумма: {{sum}}</b></p>
-                <md-button class="md-raised md-primary" ng-click="buy($event)">Купить</md-button>
-            </div>
+                <!--Basket-->
+                <div md-whiteframe="2" class="white" layout="column">
+                    <h3 class="box-title">Корзина</h3>
+                    <md-divider inset></md-divider>
+                    <md-list>
+                        <md-list-item ng-repeat="item in basket" ng-click="null">
+                            <span>{{item.title}} x{{item.count}}</span>
+                            <!--<span>{{item.count * item.price}}</span>-->
+                            <md-button class="md-secondary" ng-click="plusCount(item)">+</md-button>
+                            <md-button class="md-secondary" ng-click="minusCount(item)">-</md-button>
+                        </md-list-item>
+                    </md-list>
+                    <md-menu-divider></md-menu-divider>
+                    <p style="margin-left: 12px"><b>Сумма: {{sum}}</b></p>
+                    <md-button class="md-raised md-primary" ng-click="buy($event)">Купить</md-button>
+                </div>
+                </div>
             </div>
         </div>
     </div>
